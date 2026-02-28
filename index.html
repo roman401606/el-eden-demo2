@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Floreria El Eden — Chicago's Finest Floral Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --blush: #E8C4B0;
+    --sage: #8B9E7A;
+    --deep-green: #2C3A28;
+    --burgundy: #6B2737;
+    --gold: #C9A96E;
+    --charcoal: #1A1A1A;
+    --warm-white: #FDFAF5;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--warm-white); color: var(--charcoal); font-family: 'Jost', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+  #cursor { position: fixed; top: 0; left: 0; width: 10px; height: 10px; background: var(--burgundy); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s; }
+  #cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1px solid var(--burgundy); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, opacity 0.3s; opacity: 0.5; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 28px 60px; transition: background 0.4s, padding 0.4s; }
+  nav.scrolled { background: rgba(245,240,232,0.95); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(0,0,0,0.06); padding: 18px 60px; }
+
+  /* FIX 1 — Logo más grande (1.5 → 1.9rem) */
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 600; letter-spacing: 0.06em; color: var(--deep-green); text-decoration: none; line-height: 1; }
+  .nav-logo span { color: var(--burgundy); }
+
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--charcoal); text-decoration: none; position: relative; padding-bottom: 2px; }
+  .nav-links a::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 0; height: 1px; background: var(--burgundy); transition: width 0.3s ease; }
+  .nav-links a:hover::after { width: 100%; }
+  .lang-toggle { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; background: none; border: 1px solid var(--charcoal); padding: 6px 14px; cursor: none; transition: all 0.3s; color: var(--charcoal); font-family: 'Jost', sans-serif; }
+  .lang-toggle:hover { background: var(--charcoal); color: var(--cream); }
+
+  .hero { height: 100vh; display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
+  .hero-left { background: var(--cream); display: flex; flex-direction: column; justify-content: center; padding: 120px 80px 80px 80px; position: relative; z-index: 2; }
+  .hero-eyebrow { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sage); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(4rem, 6vw, 7rem); font-weight: 300; line-height: 0.95; color: var(--deep-green); margin-bottom: 32px; opacity: 0; animation: fadeUp 0.9s ease 0.4s forwards; }
+  .hero-title em { font-style: italic; color: var(--burgundy); }
+  .hero-subtitle { font-size: 0.9rem; line-height: 1.8; color: #555; max-width: 380px; margin-bottom: 48px; opacity: 0; animation: fadeUp 0.9s ease 0.6s forwards; }
+  .hero-ctas { display: flex; gap: 16px; align-items: center; opacity: 0; animation: fadeUp 0.9s ease 0.8s forwards; }
+  .btn-primary { background: var(--deep-green); color: var(--cream); padding: 16px 40px; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; border: none; cursor: none; transition: background 0.3s; display: inline-block; }
+  .btn-primary:hover { background: var(--burgundy); }
+  .btn-secondary { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--charcoal); text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 2px; cursor: none; transition: color 0.3s; }
+  .btn-secondary:hover { color: var(--burgundy); }
+  .hero-right { position: relative; overflow: hidden; }
+  .hero-img-wrap { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(44,58,40,0.15) 0%, transparent 50%), url('https://images.unsplash.com/photo-1487530811015-780dee86de60?w=1200&q=80') center/cover no-repeat; transform: scale(1.08); animation: zoomIn 1.5s ease forwards; }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, var(--cream) 0%, transparent 30%); }
+  .hero-line { position: absolute; right: 60px; bottom: 60px; writing-mode: vertical-rl; font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.7); z-index: 3; }
+  .hero-badge { position: absolute; top: 40%; right: 5%; width: 130px; height: 130px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; font-family: 'Cormorant Garamond', serif; font-size: 0.8rem; line-height: 1.4; backdrop-filter: blur(4px); background: rgba(107,39,55,0.3); z-index: 3; animation: spin-slow 20s linear infinite; }
+  .hero-badge span { font-family: 'Jost', sans-serif; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.8; }
+
+  .marquee-bar { background: var(--deep-green); color: var(--cream); padding: 14px 0; overflow: hidden; white-space: nowrap; }
+  .marquee-inner { display: inline-flex; animation: marquee 22s linear infinite; }
+  .marquee-item { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; padding: 0 40px; }
+  .marquee-dot { color: var(--gold); }
+
+  .section-header { text-align: center; padding: 100px 40px 60px; }
+  .section-tag { font-size: 0.62rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--sage); margin-bottom: 16px; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; color: var(--deep-green); line-height: 1.1; }
+  .section-title em { font-style: italic; color: var(--burgundy); }
+  .section-line { width: 40px; height: 1px; background: var(--gold); margin: 28px auto 0; }
+
+  .shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 40px 100px; max-width: 1400px; margin: 0 auto; }
+  .product-card { position: relative; overflow: hidden; aspect-ratio: 3/4; cursor: none; }
+  .product-img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.05); transition: transform 0.7s ease; }
+  .product-card:hover .product-img { transform: scale(1.12); }
+  .product-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,26,0.8) 0%, transparent 50%); opacity: 0; transition: opacity 0.4s ease; }
+  .product-card:hover .product-overlay { opacity: 1; }
+  .product-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 32px; transform: translateY(20px); transition: transform 0.4s ease; }
+  .product-card:hover .product-info { transform: translateY(0); }
+  .product-name { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 400; color: white; margin-bottom: 6px; }
+  .product-price { font-size: 0.75rem; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 20px; }
+  .product-btn { display: inline-block; background: white; color: var(--charcoal); padding: 10px 28px; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; cursor: none; transition: background 0.3s; }
+  .product-btn:hover { background: var(--gold); }
+  .product-badge-new { position: absolute; top: 20px; right: 20px; background: var(--burgundy); color: white; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 6px 12px; }
+  .product-featured { grid-column: span 2; aspect-ratio: unset; min-height: 600px; }
+
+  .how-section { background: var(--deep-green); color: var(--cream); padding: 100px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .how-left .section-tag { color: var(--gold); }
+  .how-left .section-title { color: var(--cream); }
+  .how-left .section-line { margin-left: 0; }
+  .how-left p { margin-top: 28px; font-size: 0.9rem; line-height: 1.9; color: rgba(245,240,232,0.7); max-width: 400px; }
+  .how-steps { display: flex; flex-direction: column; gap: 0; }
+  .step-item { display: flex; gap: 28px; padding: 28px 0; border-bottom: 1px solid rgba(245,240,232,0.12); align-items: flex-start; opacity: 0; transform: translateX(30px); transition: all 0.6s ease; }
+  .step-item.visible { opacity: 1; transform: translateX(0); }
+  .step-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: var(--gold); line-height: 1; flex-shrink: 0; width: 50px; }
+  .step-content h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; color: var(--cream); margin-bottom: 8px; }
+  .step-content p { font-size: 0.82rem; line-height: 1.7; color: rgba(245,240,232,0.6); margin-top: 0; }
+
+  .testimonial-section { padding: 100px 40px; background: var(--cream); text-align: center; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1100px; margin: 60px auto 0; }
+  .testimonial-card { background: white; padding: 40px 36px; text-align: left; position: relative; }
+  .testimonial-card::before { content: '"'; font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--blush); line-height: 1; position: absolute; top: 16px; left: 28px; }
+  .testimonial-text { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-style: italic; line-height: 1.7; color: var(--charcoal); margin-top: 24px; margin-bottom: 24px; }
+  .testimonial-author { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage); }
+  .stars { color: var(--gold); font-size: 0.75rem; margin-bottom: 8px; letter-spacing: 2px; }
+
+  .cta-banner { position: relative; height: 60vh; min-height: 400px; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; }
+  /* FIX 3 — Fondo floral: ramo de rosas rojas en estudio fotográfico */
+  .cta-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=1600&q=80') center/cover; filter: brightness(0.35); }
+  .cta-content { position: relative; z-index: 2; padding: 40px; }
+  .cta-content .section-tag { color: var(--gold); margin-bottom: 20px; }
+  .cta-content h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 300; color: white; line-height: 1.1; margin-bottom: 32px; }
+  .cta-content h2 em { font-style: italic; color: var(--blush); }
+  .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-white { background: white; color: var(--charcoal); padding: 16px 44px; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; cursor: none; transition: background 0.3s; }
+  .btn-white:hover { background: var(--gold); }
+  .btn-outline-white { border: 1px solid rgba(255,255,255,0.5); color: white; padding: 16px 44px; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; cursor: none; transition: border-color 0.3s, background 0.3s; }
+  .btn-outline-white:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+  .whatsapp-float { position: fixed; bottom: 32px; right: 32px; width: 58px; height: 58px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 8px 32px rgba(37,211,102,0.4); z-index: 500; cursor: none; transition: transform 0.3s, box-shadow 0.3s; animation: pulse-wa 3s ease infinite; }
+  .whatsapp-float:hover { transform: scale(1.1); box-shadow: 0 12px 40px rgba(37,211,102,0.5); }
+  .whatsapp-float svg { width: 28px; height: 28px; fill: white; }
+
+  footer { background: var(--charcoal); color: var(--cream); padding: 80px 80px 40px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; }
+  .footer-brand .nav-logo { font-size: 1.8rem; display: block; margin-bottom: 16px; color: var(--cream); }
+  .footer-brand .nav-logo span { color: var(--gold); }
+  .footer-brand p { font-size: 0.82rem; line-height: 1.8; color: rgba(245,240,232,0.5); max-width: 260px; }
+  .footer-col h4 { font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 12px; }
+  .footer-col ul li a { font-size: 0.82rem; color: rgba(245,240,232,0.5); text-decoration: none; transition: color 0.3s; }
+  .footer-col ul li a:hover { color: var(--cream); }
+  .footer-bottom { background: var(--charcoal); border-top: 1px solid rgba(245,240,232,0.08); padding: 24px 80px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-bottom p { font-size: 0.7rem; color: rgba(245,240,232,0.3); }
+  .payment-icons { display: flex; gap: 12px; align-items: center; }
+  .pay-icon { background: rgba(245,240,232,0.08); border-radius: 4px; padding: 4px 10px; font-size: 0.6rem; letter-spacing: 0.1em; color: rgba(245,240,232,0.4); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes zoomIn { from { transform: scale(1.08); } to { transform: scale(1); } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes pulse-wa { 0%, 100% { box-shadow: 0 8px 32px rgba(37,211,102,0.4); } 50% { box-shadow: 0 8px 48px rgba(37,211,102,0.65); } }
+
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,26,0.85); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--warm-white); max-width: 520px; width: 90%; padding: 56px 48px; position: relative; transform: translateY(30px); transition: transform 0.4s ease; }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-close { position: absolute; top: 20px; right: 24px; font-size: 1.2rem; cursor: none; color: #888; background: none; border: none; }
+  .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 400; color: var(--deep-green); margin-bottom: 8px; }
+  .modal p { font-size: 0.85rem; color: #777; margin-bottom: 32px; line-height: 1.7; }
+  .modal-product-row { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--cream); margin-bottom: 28px; }
+  .modal-product-row img { width: 70px; height: 70px; object-fit: cover; }
+  .modal-product-row .mpname { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--deep-green); }
+  .modal-product-row .mpprice { font-size: 0.8rem; color: var(--gold); }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+  .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; background: white; font-family: 'Jost', sans-serif; font-size: 0.9rem; color: var(--charcoal); outline: none; transition: border-color 0.3s; cursor: none; }
+  .form-group input:focus { border-color: var(--deep-green); }
+  .tax-note { font-size: 0.72rem; color: #999; margin-bottom: 20px; padding: 12px 16px; background: #f9f9f9; border-left: 3px solid var(--gold); }
+  .modal-submit { width: 100%; padding: 16px; background: var(--deep-green); color: white; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; cursor: none; transition: background 0.3s; }
+  .modal-submit:hover { background: var(--burgundy); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; } .hero-right { display: none; } .hero-left { padding: 100px 32px 60px; }
+    nav { padding: 20px 24px; } nav.scrolled { padding: 14px 24px; }
+    .shop-grid { grid-template-columns: 1fr 1fr; padding: 0 16px 60px; } .product-featured { grid-column: span 2; }
+    .how-section { grid-template-columns: 1fr; padding: 60px 32px; } .testimonials-grid { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr 1fr; padding: 60px 32px 32px; gap: 40px; }
+    .footer-bottom { padding: 20px 32px; flex-direction: column; gap: 12px; text-align: center; }
+    .nav-links { display: none; } body { cursor: auto; } #cursor, #cursor-ring { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="navbar">
+  <!-- FIX 1: Nombre correcto -->
+  <a href="#" class="nav-logo">Florería <span>El Edén</span></a>
+  <ul class="nav-links">
+    <li><a href="#shop" id="nav-shop">Shop</a></li>
+    <li><a href="#how" id="nav-how">How It Works</a></li>
+    <li><a href="#about" id="nav-about">About</a></li>
+    <li><a href="#contact" id="nav-contact">Contact</a></li>
+  </ul>
+  <button class="lang-toggle" id="langToggle">ES / EN</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow" id="heroEyebrow">Chicago's Premier Floral Studio · Est. 2004</p>
+    <h1 class="hero-title" id="heroTitle">Where<br>Flowers<br>Tell <em>Stories</em></h1>
+    <p class="hero-subtitle" id="heroSub">Handcrafted arrangements grown with intention. From our studio to your most important moments — delivered across Chicago and shipped nationwide.</p>
+    <div class="hero-ctas">
+      <a href="#shop" class="btn-primary" id="heroCta1">Shop Now</a>
+      <a href="#how" class="btn-secondary" id="heroCta2">How It Works →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-wrap"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-badge"><span>Fresh</span>Same-Day<br>Delivery<span>Chicago</span></div>
+    <p class="hero-line">Florería El Edén · Chicago · Est. 2004</p>
+  </div>
+</section>
+
+<div class="marquee-bar"><div class="marquee-inner">
+  <span class="marquee-item">Same-Day Delivery <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Entrega el Mismo Día <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Weddings &amp; Events <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Bodas y Eventos <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Nationwide Shipping <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Square Secured Payments <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Same-Day Delivery <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Entrega el Mismo Día <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Weddings &amp; Events <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Bodas y Eventos <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Nationwide Shipping <span class="marquee-dot">✦</span></span>
+  <span class="marquee-item">Square Secured Payments <span class="marquee-dot">✦</span></span>
+</div></div>
+
+<section id="shop">
+  <div class="section-header reveal">
+    <p class="section-tag" id="shopTag">— Featured Collection —</p>
+    <h2 class="section-title" id="shopTitle">Our <em>Finest</em> Arrangements</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="shop-grid">
+
+    <div class="product-card product-featured" onclick="openModal('Rosa Eternidad', '$89.00', 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=900&q=80')">
+      <img class="product-img" src="https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=900&q=80" alt="Rosa Eternidad" loading="lazy" />
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <p class="product-name">Rosa Eternidad</p>
+        <p class="product-price">From $89.00 USD</p>
+        <span class="product-btn">Order Now</span>
+      </div>
+      <span class="product-badge-new">Best Seller</span>
+    </div>
+
+    <div class="product-card" onclick="openModal('Primavera Bloom', '$65.00', 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=600&q=80')">
+      <img class="product-img" src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=600&q=80" alt="Primavera Bloom" loading="lazy" />
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <p class="product-name">Primavera Bloom</p>
+        <p class="product-price">From $65.00 USD</p>
+        <span class="product-btn">Order Now</span>
+      </div>
+    </div>
+
+    <div class="product-card" onclick="openModal('Jardín Secreto', '$120.00', 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=600&q=80')">
+      <img class="product-img" src="https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=600&q=80" alt="Jardín Secreto" loading="lazy" />
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <p class="product-name">Jardín Secreto</p>
+        <p class="product-price">From $120.00 USD</p>
+        <span class="product-btn">Order Now</span>
+      </div>
+      <span class="product-badge-new">New</span>
+    </div>
+
+    <div class="product-card" onclick="openModal('Sunlit Meadow', '$75.00', 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1000&auto=format&fit=crop')">
+      <img class="product-img" src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1000&auto=format&fit=crop" alt="Sunlit Meadow" loading="lazy" />
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <p class="product-name">Sunlit Meadow</p>
+        <p class="product-price">From $75.00 USD</p>
+        <span class="product-btn">Order Now</span>
+      </div>
+    </div>
+
+    <!-- FIX 2: Crepúsculo — URL verificada de tulipanes/rosas naranjas -->
+    <div class="product-card" onclick="openModal('Crepúsculo', '$95.00', 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&q=80')">
+      <img class="product-img" src="https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&q=80" alt="Crepúsculo" loading="lazy" />
+      <div class="product-overlay"></div>
+      <div class="product-info">
+        <p class="product-name">Crepúsculo</p>
+        <p class="product-price">From $95.00 USD</p>
+        <span class="product-btn">Order Now</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="how-section" id="how">
+  <div class="how-left reveal">
+    <p class="section-tag">— Simple Process —</p>
+    <h2 class="section-title">Ordering is <em>Effortless</em></h2>
+    <div class="section-line"></div>
+    <p>From selection to your door — we've designed every step to be as beautiful as the flowers themselves. Secure checkout powered by Square, with personal coordination via WhatsApp.</p>
+  </div>
+  <div class="how-steps">
+    <div class="step-item"><div class="step-num">01</div><div class="step-content"><h3>Choose Your Arrangement</h3><p>Browse our curated collection and select the perfect blooms for your occasion — or let us craft something bespoke.</p></div></div>
+    <div class="step-item"><div class="step-num">02</div><div class="step-content"><h3>Secure Checkout via Square</h3><p>Fast, encrypted payment in USD with automatic Chicago sales tax (10.25%) applied. All major cards accepted.</p></div></div>
+    <div class="step-item"><div class="step-num">03</div><div class="step-content"><h3>Coordinate on WhatsApp</h3><p>Once your order is confirmed, you're redirected to our WhatsApp Business to personalize delivery details and timing.</p></div></div>
+    <div class="step-item"><div class="step-num">04</div><div class="step-content"><h3>Delivered with Care</h3><p>Same-day delivery across Chicago. Each arrangement is hand-prepared and delivered fresh from our studio.</p></div></div>
+  </div>
+</section>
+
+<section class="testimonial-section" id="about">
+  <div class="reveal">
+    <p class="section-tag">— What Clients Say —</p>
+    <h2 class="section-title">Moments <em>Remembered</em></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">Florería El Edén transformed our wedding beyond imagination. Every guest asked about the flowers. They're truly artists.</p>
+      <p class="testimonial-author">— María G. · Wedding, June 2024</p>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">Ordered online at noon, flowers arrived by 4pm, fresh and absolutely stunning. The WhatsApp coordination made it so easy.</p>
+      <p class="testimonial-author">— James K. · Anniversary Gift</p>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">Como cliente latina en Chicago, me encanta que todo está en español también. El servicio es de primera clase.</p>
+      <p class="testimonial-author">— Sofía R. · Quinceañera Decor</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner" id="contact">
+  <div class="cta-bg"></div>
+  <!-- FIX 3: Fondo floral de tulipanes rosas/rojos verificado -->
+  <div class="cta-content reveal">
+    <p class="section-tag">— Ready to Begin? —</p>
+    <h2>Every Occasion<br>Deserves <em>Flowers</em></h2>
+    <div class="cta-actions">
+      <a href="#shop" class="btn-white">Shop Arrangements</a>
+      <a href="https://wa.me/13125550000" class="btn-outline-white">Chat on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">
+    <a href="#" class="nav-logo">Florería <span>El Edén</span></a>
+    <p>Chicago's premier bilingual floral studio. Crafting arrangements that speak when words fall short — since 2004.</p>
+  </div>
+  <div class="footer-col"><h4>Shop</h4><ul><li><a href="#">Seasonal</a></li><li><a href="#">Weddings</a></li><li><a href="#">Sympathy</a></li><li><a href="#">Corporate</a></li><li><a href="#">Gifts</a></li></ul></div>
+  <div class="footer-col"><h4>Info</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Delivery Zones</a></li><li><a href="#">Care Guide</a></li><li><a href="#">FAQs</a></li></ul></div>
+  <div class="footer-col"><h4>Contact</h4><ul><li><a href="#">WhatsApp</a></li><li><a href="#">Instagram</a></li><li><a href="#">3001 S Avers Ave, Chicago</a></li><li><a href="#">hola@floreriaeleden.com</a></li></ul></div>
+</footer>
+
+<div class="footer-bottom">
+  <p>© 2026 Florería El Edén · Chicago, IL · All rights reserved</p>
+  <div class="payment-icons"><span class="pay-icon">SQUARE</span><span class="pay-icon">VISA</span><span class="pay-icon">MC</span><span class="pay-icon">AMEX</span></div>
+</div>
+
+<a href="https://wa.me/13125550000" class="whatsapp-float" title="Chat with us on WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</a>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modalProductName">Rosa Eternidad</h2>
+    <p id="modalIntro">Complete your order — we'll finalize delivery details via WhatsApp.</p>
+    <div class="modal-product-row">
+      <img id="modalImg" src="" alt="" />
+      <div><p class="mpname" id="modalName2">Rosa Eternidad</p><p class="mpprice" id="modalPrice">$89.00 USD</p></div>
+    </div>
+    <div class="form-group"><label>Your Name</label><input type="text" id="orderName" placeholder="Full Name" /></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="orderEmail" placeholder="email@example.com" /></div>
+    <div class="form-group"><label>Phone / WhatsApp</label><input type="tel" id="orderPhone" placeholder="+1 (312) 000-0000" /></div>
+    <div class="tax-note" id="taxNote">
+      Subtotal: <span id="taxSubtotal">$89.00</span> + Tax (10.25%): <span id="taxAmount">$9.12</span> = <strong id="taxTotal">$98.12 USD</strong>
+    </div>
+    <button class="modal-submit" onclick="handleOrder()">Proceed to Checkout via Square →</button>
+  </div>
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button, .product-card, .lang-toggle, .modal-close').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width='16px'; cursor.style.height='16px'; cursorRing.style.width='52px'; cursorRing.style.height='52px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width='10px'; cursor.style.height='10px'; cursorRing.style.width='36px'; cursorRing.style.height='36px'; });
+  });
+
+  window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80); });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal, .step-item').forEach((el, i) => {
+    if (el.classList.contains('step-item')) el.style.transitionDelay = (i * 0.12) + 's';
+    observer.observe(el);
+  });
+
+  let lang = 'en';
+  const translations = {
+    en: { eyebrow: "Chicago's Premier Floral Studio · Est. 2004", title: "Where<br>Flowers<br>Tell <em>Stories</em>", sub: "Handcrafted arrangements grown with intention. From our studio to your most important moments — delivered across Chicago and shipped nationwide.", cta1: "Shop Now", cta2: "How It Works →", shopTag: "— Featured Collection —", shopTitle: "Our <em>Finest</em> Arrangements", navShop: "Shop", navHow: "How It Works", navAbout: "About", navContact: "Contact", modalIntro: "Complete your order — we'll finalize delivery details via WhatsApp." },
+    es: { eyebrow: "El Estudio Floral Premier de Chicago · Est. 2004", title: "Donde las<br>Flores<br>Cuentan <em>Historias</em>", sub: "Arreglos artesanales cultivados con intención. Desde nuestro estudio hasta tus momentos más importantes — entregados en Chicago y enviados a todo el país.", cta1: "Comprar Ahora", cta2: "Cómo Funciona →", shopTag: "— Colección Destacada —", shopTitle: "Nuestros <em>Mejores</em> Arreglos", navShop: "Tienda", navHow: "Cómo Funciona", navAbout: "Nosotros", navContact: "Contacto", modalIntro: "Completa tu pedido — coordinaremos la entrega por WhatsApp." }
+  };
+  document.getElementById('langToggle').addEventListener('click', () => {
+    lang = lang === 'en' ? 'es' : 'en';
+    const t = translations[lang];
+    document.getElementById('heroEyebrow').textContent = t.eyebrow;
+    document.getElementById('heroTitle').innerHTML = t.title;
+    document.getElementById('heroSub').textContent = t.sub;
+    document.getElementById('heroCta1').textContent = t.cta1;
+    document.getElementById('heroCta2').textContent = t.cta2;
+    document.getElementById('shopTag').textContent = t.shopTag;
+    document.getElementById('shopTitle').innerHTML = t.shopTitle;
+    document.getElementById('nav-shop').textContent = t.navShop;
+    document.getElementById('nav-how').textContent = t.navHow;
+    document.getElementById('nav-about').textContent = t.navAbout;
+    document.getElementById('nav-contact').textContent = t.navContact;
+    document.getElementById('modalIntro').textContent = t.modalIntro;
+    document.getElementById('langToggle').textContent = lang === 'en' ? 'ES / EN' : 'EN / ES';
+  });
+
+  function openModal(name, price, img) {
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalName2').textContent = name;
+    document.getElementById('modalPrice').textContent = price + ' USD';
+    document.getElementById('modalImg').src = img;
+    const base = parseFloat(price.replace(/[$,]/g, ''));
+    const tax = (base * 0.1025).toFixed(2);
+    const total = (base + parseFloat(tax)).toFixed(2);
+    document.getElementById('taxSubtotal').textContent = '$' + base.toFixed(2);
+    document.getElementById('taxAmount').textContent = '$' + tax;
+    document.getElementById('taxTotal').textContent = '$' + total + ' USD';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
+  function handleOrder() {
+    const nameInput = document.getElementById('orderName').value;
+    const phoneInput = document.getElementById('orderPhone').value;
+    const product = document.getElementById('modalName2').textContent;
+    const total = document.getElementById('taxTotal').textContent;
+    closeModal();
+    const msg = encodeURIComponent(`¡Hola Florería El Edén! 🌸\nOrder: ${product}\nTotal: ${total}\nName: ${nameInput || 'Customer'}\nPhone: ${phoneInput || 'N/A'}\nPlease confirm delivery. ¡Gracias!`);
+    setTimeout(() => { window.open(`https://wa.me/13125550000?text=${msg}`, '_blank'); }, 300);
+  }
+</script>
+</body>
+</html>
